@@ -1,0 +1,234 @@
+{%- style -%}
+  .navigation-wrapper {
+      position: relative;
+    }
+
+  .dots {
+    display: flex;
+    padding: 10px 0;
+    justify-content: center;
+    position: absolute;
+    bottom: 12px;
+    left: 50%;
+    transform: translateX(-50%);
+  }
+
+  .dot {
+    border: none;
+    width: 6px;
+    height: 6px;
+    background: #c5c5c5;
+    border-radius: 50%;
+    margin: 0 5px;
+    padding: 3px;
+    cursor: pointer;
+  }
+
+  .dot:focus {
+    outline: none;
+  }
+
+  .dot--active {
+    background: #000;
+  }
+
+  #Banner-{{ section.id }}{
+    opacity: {{ section.settings.image_overlay_opacity | divided_by: 100.0 }};
+  }
+
+  #section-{{ section.id }}-padding {
+    padding-top: {{ section.settings.padding_top | times: 0.75 | round: 0 }}px;
+    padding-bottom: {{ section.settings.padding_bottom | times: 0.75 | round: 0 }}px;
+  }
+
+  @media screen and (min-width: 750px) {
+    #section-{{ section.id }}-padding {
+      padding-top: {{ section.settings.padding_top }}px;
+      padding-bottom: {{ section.settings.padding_bottom }}px;
+    }
+  }
+{%- endstyle -%}
+
+<section id="section-{{ section.id }}-padding" class="slider-wrapper w-full overflow-x-hidden">
+  <div class="color-{{ section.settings.color_scheme }} navigation-wrapper">
+    <div id="my-keen-slider" class="keen-slider">
+      {% for block in section.blocks %}
+        {% case block.type %}
+          {% when 'carousel-item' %}
+            <div class="keen-slider__slide number-slide1 flex h-[40rem] items-center justify-center bg-gray-500">
+              {%- comment -%} Content Section {%- endcomment -%}
+              <div class="relative h-full w-full px-5">
+                <div class="relative z-[2] m-auto flex h-full w-full flex-col justify-center gap-4 {% if section.settings.desktop_content_alignment == "start" %}items-start{% elsif section.settings.desktop_content_alignment == "center" %}items-center {% else %}items-end {% endif %} ">
+                  {% if block.settings.heading != blank %}
+                    <h1 class="max-w-4xl text-4xl font-bold {% if section.settings.desktop_content_alignment == "start" %}text-left{% elsif section.settings.desktop_content_alignment == "center" %}text-center {% else %}text-right {% endif %}">
+                      {{ block.settings.heading | escape }}
+                    </h1>
+                  {% endif %}
+                  <div class="flex gap-2">
+                    {% if block.settings.button_label != blank %}
+                      <button
+                        href="{{ block.settings.button_url }}"
+                        class="{% if block.settings.button_outline_2 %}button--outline{% endif %}"
+                      >
+                        {{ block.settings.button_label }}
+                      </button>
+                    {% endif %}
+                  </div>
+                </div>
+              </div>
+              {%- comment -%} Media section {%- endcomment -%}
+              <div class="absolute left-0 top-0 h-full w-full text-left">
+                <div
+                  id="Banner-{{ section.id }}"
+                  class="absolute z-[1] h-full w-full bg-black"
+                ></div>
+                {% assign image_height = block.settings.image.width | divided_by: block.settings.image.aspect_ratio %}
+
+                {{
+                  block.settings.image
+                  | image_url: width: 3840
+                  | image_tag:
+                    loading: 'lazy',
+                    width: block.settings.image.width,
+                    height: image_height,
+                    class: 'absolute w-full max-w-full object-cover h-full',
+                    sizes: '100vw',
+                    widths: '375, 550, 750, 1100, 1500, 1780, 2000, 3000, 3840 '
+                }}
+              </div>
+            </div>
+        {% endcase %}
+      {% endfor %}
+    </div>
+  </div>
+</section>
+
+{% schema %}
+{
+  "name": "Carousel",
+  "blocks": [
+    {
+      "type": "carousel-item",
+      "name": "Carousel Item",
+      "limit": 6,
+      "settings": [
+        {
+          "type": "image_picker",
+          "id": "image",
+          "label": "Image",
+          "info": "We suggest an image ratio of 1:1 for best results."
+        },
+        {
+          "type": "text",
+          "id": "heading",
+          "label": "Heading",
+          "default": "Carousel slide"
+        },
+        {
+          "type": "url",
+          "id": "button_url",
+          "label": "Button url"
+        },
+        {
+          "type": "text",
+          "id": "button_label",
+          "default": "Learn more",
+          "label": "Button label"
+        }
+      ]
+    }
+  ],
+  "settings": [
+    {
+      "type": "range",
+      "id": "image_overlay_opacity",
+      "min": 0,
+      "max": 100,
+      "step": 10,
+      "unit": "%",
+      "label": "Image overlay opacity",
+      "default": 0
+    },
+    {
+      "type": "select",
+      "id": "image_height",
+      "options": [
+        {
+          "value": "small",
+          "label": "Small"
+        },
+        {
+          "value": "medium",
+          "label": "Medium"
+        },
+        {
+          "value": "large",
+          "label": "Large"
+        }
+      ],
+      "default": "large",
+      "label": "Image height"
+    },
+    {
+      "type": "select",
+      "id": "desktop_content_alignment",
+      "options": [
+        {
+          "value": "start",
+          "label": "left"
+        },
+        {
+          "value": "center",
+          "label": "center"
+        },
+        {
+          "value": "end",
+          "label": "right"
+        }
+      ],
+      "default": "center",
+      "label": "Desktop content alignment"
+    },
+    {
+      "type": "select",
+      "id": "color_scheme",
+      "options": [
+        {
+          "value": "primary",
+          "label": "Primary"
+        },
+        {
+          "value": "inverse",
+          "label": "Inverse"
+        }
+      ],
+      "default": "primary",
+      "label": "Color scheme"
+    },
+    {
+      "type": "header",
+      "content": "section padding"
+    },
+    {
+      "type": "range",
+      "id": "padding_top",
+      "min": 0,
+      "max": 128,
+      "step": 8,
+      "unit": "px",
+      "label": "Top padding",
+      "default": 64
+    },
+    {
+      "type": "range",
+      "id": "padding_bottom",
+      "min": 0,
+      "max": 128,
+      "step": 8,
+      "unit": "px",
+      "label": "Bottom padding",
+      "default": 64
+    }
+  ]
+}
+{% endschema %}

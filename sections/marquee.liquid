@@ -1,0 +1,77 @@
+<style>
+  .marquee3k__copy {
+    padding-right: 40px;
+    box-sizing: border-box;
+  }
+
+  #section-{{ section.id }}-padding {
+    padding-top: {{ section.settings.padding_top | times: 0.75 | round: 0 }}px;
+    padding-bottom: {{ section.settings.padding_bottom | times: 0.75 | round: 0 }}px;
+  }
+
+  @media screen and (min-width: 750px) {
+    #section-{{ section.id }}-padding {
+      padding-top: {{ section.settings.padding_top }}px;
+      padding-bottom: {{ section.settings.padding_bottom }}px;
+    }
+  }
+</style>
+
+{%- comment -%}removed marquee-carousel id from <section>{%- endcomment -%}
+<section class="w-full max-w-full overflow-x-hidden" id="section-{{ section.id }}-padding">
+  <div class="diagonal-marquee w-full max-w-full bg-accent py-10">
+    <div
+      class="marquee3k"
+      data-speed="0.5"
+      data-reverse="true"
+      data-pausable="false"
+    >
+      <span class="font-heading text-3xl text-surface">{{ section.settings.title }}</span>
+    </div>
+  </div>
+</section>
+
+<script>
+  document.addEventListener('DOMContentLoaded', () => {
+    Marquee3k.init();
+  });
+</script>
+
+{% schema %}
+{
+  "name": "Marquee",
+  "class": "w-full",
+  "settings": [
+    {
+      "type": "text",
+      "id": "title",
+      "default": "Some marquee content",
+      "label": "Marquee title"
+    },
+    {
+      "type": "header",
+      "content": "section padding"
+    },
+    {
+      "type": "range",
+      "id": "padding_top",
+      "min": 0,
+      "max": 128,
+      "step": 8,
+      "unit": "px",
+      "label": "Top padding",
+      "default": 0
+    },
+    {
+      "type": "range",
+      "id": "padding_bottom",
+      "min": 0,
+      "max": 128,
+      "step": 8,
+      "unit": "px",
+      "label": "Bottom padding",
+      "default": 0
+    }
+  ]
+}
+{% endschema %}

@@ -1,0 +1,139 @@
+{
+  "sections": {
+    "main-banner": {
+      "type": "image-banner",
+      "blocks": {
+        "heading-1": {
+          "type": "heading",
+          "settings": {
+            "heading_label": "Healthy minds start with healthy habits",
+            "heading_size": "xl"
+          }
+        },
+        "text-block": {
+          "type": "text",
+          "settings": {
+            "text": "<p>Our blends are made with organic herbs, spices and mushrooms, with no-to-low caffeine. They help you :rise in the morning, :balance throughout the day and :rest in the evening.</p>"
+          }
+        },
+        "cta-buttons-1": {
+          "type": "buttons",
+          "settings": {
+            "button_label_1": "Shop all",
+            "button_url_1": "shopify://collections/shop-all",
+            "button_outline_1": false,
+            "button_label_2": "",
+            "button_url_2": "",
+            "button_outline_2": true
+          }
+        }
+      },
+      "block_order": ["heading-1", "text-block", "cta-buttons-1"],
+      "settings": {
+        "image": "shopify://shop_images/fungi-hero-4.jpg",
+        "heading": "",
+        "image_overlay_opacity": 0,
+        "image_height": "large",
+        "desktop_content_alignment": "start",
+        "color_scheme": "background-1"
+      }
+    },
+    "main-collection-list": {
+      "type": "collection-list",
+      "blocks": {
+        "featured-collection-1": {
+          "type": "featured_collection",
+          "settings": {
+            "collection": "powders",
+            "button_label": "Shop Collection"
+          }
+        },
+        "featured-collection-2": {
+          "type": "featured_collection",
+          "settings": {
+            "collection": "elixers",
+            "button_label": "Shop Collection"
+          }
+        }
+      },
+      "block_order": ["featured-collection-1", "featured-collection-2"],
+      "settings": {
+        "title": "Essentials",
+        "image_ratio": "portrait",
+        "enable_carousel": false,
+        "columns_desktop": 2,
+        "columns_mobile": "1",
+        "content_alignment": "text-left",
+        "padding_top": 64,
+        "padding_bottom": 0
+      }
+    },
+
+    "main-image-with-text": {
+      "type": "image-with-text",
+      "blocks": {
+        "heading-block": {
+          "type": "heading",
+          "settings": {
+            "heading": "<p>The Best Source, Dose, Form™</p>"
+          }
+        },
+        "text-block": {
+          "type": "text",
+          "settings": {
+            "text": "<p>Source is always transparent. We go above and beyond to 3rd party test for bio-identity, purity, potency, microbiological content, residual solvents, heavy metals, and pesticid</p>"
+          }
+        },
+        "button-block": {
+          "type": "button",
+          "settings": {
+            "button_label": "Learn more",
+            "button_url": "shopify://collections/shop-all",
+            "button_style_secondary": false
+          }
+        }
+      },
+      "block_order": ["heading-block", "text-block", "button-block"],
+      "settings": {
+        "image": "shopify://shop_images/mush.jpg",
+        "image_placement": "image_second",
+        "content_position": "justify-center",
+        "content_alignment": "start",
+        "color_scheme": "background-1",
+        "padding_top": 64,
+        "padding_bottom": 0
+      }
+    },
+    "main-featured-collection": {
+      "type": "featured-collection",
+      "settings": {
+        "title": "Shop New Arrivals",
+        "description": "",
+        "collection": "shop-all",
+        "products_to_show": 8,
+        "image_ratio": "portrait",
+        "enable_carousel": true,
+        "columns_desktop": "5",
+        "columns_mobile": "2",
+        "content_alignment": "text-left",
+        "padding_top": 64,
+        "padding_bottom": 0
+      }
+    },
+    "main-marquee": {
+      "type": "marquee",
+      "settings": {
+        "title": "Delights for enlightenment.",
+        "padding_top": 128,
+        "padding_bottom": 0
+      }
+    }
+  },
+  "order": [
+    "main-banner",
+    "main-collection-list",
+    "main-image-with-text",
+    "main-featured-collection",
+    "main-marquee"
+  ]
+}

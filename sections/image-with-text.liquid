@@ -1,0 +1,223 @@
+{%- style -%}
+  #section-{{ section.id }}-padding {
+    padding-top: {{ section.settings.padding_top | times: 0.75 | round: 0 }}px;
+    padding-bottom: {{ section.settings.padding_bottom | times: 0.75 | round: 0 }}px;
+  }
+
+  @media screen and (min-width: 750px) {
+    #section-{{ section.id }}-padding {
+      padding-top: {{ section.settings.padding_top }}px;
+      padding-bottom: {{ section.settings.padding_bottom }}px;
+    }
+  }
+{%- endstyle -%}
+
+<section id="section-{{ section.id }}-padding" class="w-full px-5">
+  <div class="color-{{ section.settings.color_scheme }} mx-auto grid w-full grid-cols-1 gap-y-8 md:grid-cols-2 {% if section.settings.color_scheme == "background-1" %} gap-x-4 {% endif %}">
+    {%- comment -%} Image section {%- endcomment -%}
+    <div class="relative {% if section.settings.image_placement == "image_second" %} order-2 {% endif %} overflow-hidden pb-[75%]">
+      {% render 'image'; image: section.settings.image; size: 'large'; alt: "image with text hero image" %}
+    </div>
+    {%- comment -%} Text section {%- endcomment -%}
+    <div class="flex flex-col gap-4 {% if section.settings.color_scheme == "background-1" %} pt-6 md:p-0 {% else %} p-8 md:p-10 {% endif %} {{ section.settings.content_position }} {% if section.settings.content_alignment == "start" %}items-start{% elsif section.settings.content_alignment == "center" %}items-center text-center{% else %}items-end text-right{% endif %}">
+      {% for block in section.blocks %}
+        {% case block.type %}
+          {% when 'heading' %}
+            <h1 class="">{{ block.settings.heading | replace: 'p>', 'span>' }}</h1>
+          {% when 'text' %}
+            <p>{{ block.settings.text | replace: 'p>', 'span>' }}</p>
+          {% when 'button' %}
+            {% if block.settings.button_label != blank %}
+              <button
+                href="{{ block.setttings.button_url }}"
+                class="{% if block.settings.button_style_secondary %}button--outline{% endif %}"
+              >
+                {{ block.settings.button_label }}
+              </button>
+            {% endif %}
+        {% endcase %}
+      {% endfor %}
+    </div>
+  </div>
+</section>
+
+{% schema %}
+{
+  "name": "Image with text",
+  "blocks": [
+    {
+      "type": "heading",
+      "name": "Heading",
+      "limit": 1,
+      "settings": [
+        {
+          "type": "richtext",
+          "id": "heading",
+          "default": "<p>Image banner heading</p>",
+          "label": "Heading"
+        }
+      ]
+    },
+    {
+      "type": "text",
+      "name": "Text",
+      "limit": 1,
+      "settings": [
+        {
+          "type": "richtext",
+          "id": "text",
+          "default": "<p>Talk about your brand</p>",
+          "label": "Description"
+        }
+      ]
+    },
+    {
+      "type": "button",
+      "name": "Button",
+      "limit": 1,
+      "settings": [
+        {
+          "type": "text",
+          "id": "button_label",
+          "default": "Shop all",
+          "label": "Button label"
+        },
+        {
+          "type": "url",
+          "id": "button_url",
+          "label": "Button url"
+        },
+        {
+          "type": "checkbox",
+          "id": "button_style_secondary",
+          "default": false,
+          "label": "Button Secondary Style"
+        }
+      ]
+    }
+  ],
+  "settings": [
+    {
+      "type": "image_picker",
+      "id": "image",
+      "label": "Image"
+    },
+    {
+      "type": "select",
+      "id": "image_placement",
+      "options": [
+        {
+          "value": "image_first",
+          "label": "Imge first"
+        },
+        {
+          "value": "image_second",
+          "label": "Image second"
+        }
+      ],
+      "default": "image_first",
+      "label": "Image placement"
+    },
+    {
+      "type": "select",
+      "id": "content_position",
+      "options": [
+        {
+          "value": "justify-start",
+          "label": "Top"
+        },
+        {
+          "value": "justify-center",
+          "label": "Center"
+        },
+        {
+          "value": "justify-end",
+          "label": "Bottom"
+        }
+      ],
+      "default": "justify-center",
+      "label": "Content position"
+    },
+    {
+      "type": "select",
+      "id": "content_alignment",
+      "options": [
+        {
+          "value": "start",
+          "label": "Left"
+        },
+        {
+          "value": "center",
+          "label": "Center"
+        },
+        {
+          "value": "end",
+          "label": "Right"
+        }
+      ],
+      "default": "start",
+      "label": "Content alignment"
+    },
+    {
+      "type": "select",
+      "id": "color_scheme",
+      "options": [
+        {
+          "value": "background-1",
+          "label": "Background 1"
+        },
+        {
+          "value": "inverse",
+          "label": "Inverse"
+        },
+        {
+          "value": "contrast",
+          "label": "Contrast"
+        }
+      ],
+      "default": "background-1",
+      "label": "Color Scheme"
+    },
+    {
+      "type": "header",
+      "content": "section padding"
+    },
+    {
+      "type": "range",
+      "id": "padding_top",
+      "min": 0,
+      "max": 128,
+      "step": 8,
+      "unit": "px",
+      "label": "Top padding",
+      "default": 64
+    },
+    {
+      "type": "range",
+      "id": "padding_bottom",
+      "min": 0,
+      "max": 128,
+      "step": 8,
+      "unit": "px",
+      "label": "Bottom padding",
+      "default": 64
+    }
+  ],
+  "presets": [
+    {
+      "name": "Image with text",
+      "blocks": [
+        {
+          "type": "heading"
+        },
+        {
+          "type": "text"
+        },
+        {
+          "type": "button"
+        }
+      ]
+    }
+  ]
+}
+{% endschema %}

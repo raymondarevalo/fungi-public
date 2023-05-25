@@ -1,0 +1,397 @@
+<style>
+  .template-search__header {
+    margin: 3.2rem 0;
+  }
+
+  .template-search--empty {
+    padding-bottom: 18rem;
+  }
+
+  .template-search .article-card .card__heading,
+  .template-search .article-card .article-card__info {
+    font-size: calc(var(--font-heading-scale) * 1.6rem);
+    line-height: calc(var(--font-heading-scale) * 2.4rem);
+    letter-spacing: calc(var(--font-heading-scale) * 0.06rem);
+  }
+
+  .template-search .article-card .article-card__info {
+    margin-top: 0.7rem;
+  }
+
+  @media screen and (min-width: 750px) {
+    .template-search .article-card .card__heading,
+    .template-search .article-card .article-card__info {
+      font-size: calc(var(--font-heading-scale) * 1.8rem);
+    }
+  }
+
+  .search__button .icon {
+    height: 1.8rem;
+  }
+
+  .search__heading {
+    margin: 0;
+    line-height: 1;
+  }
+
+  .featured-collection-section:not(.view-collection) {
+    display: none;
+  }
+</style>
+
+{%- liquid
+  assign sort_by = search.sort_by | default: search.default_sort_by
+  assign terms = search.terms | escape
+  assign search_url = '?q=' | append: terms | append: '&options%5Bprefix%5D=last&sort_by=' | append: sort_by
+-%}
+
+{%- capture columns_mobile -%}
+grid-cols-{{ section.settings.columns_mobile }}
+{%- endcapture -%}
+
+{%- capture columns_desktop -%}
+md:grid-cols-{{ section.settings.columns_desktop }}
+{%- endcapture -%}
+
+{%- style -%}
+  #section-{{ section.id }}-padding {
+    padding-top: {{ section.settings.padding_top | times: 0.75 | round: 0 }}px;
+    padding-bottom: {{ section.settings.padding_bottom | times: 0.75 | round: 0 }}px;
+  }
+
+  @media screen and (min-width: 750px) {
+    #section-{{ section.id }}-padding {
+      padding-top: {{ section.settings.padding_top }}px;
+      padding-bottom: {{ section.settings.padding_bottom }}px;
+    }
+  }
+{%- endstyle -%}
+
+<div
+  id="section-{{ section.id }}-padding"
+  class="template-search {% unless search.performed and search.results_count > 0 %}pb-4{% endunless %} w-full"
+>
+  {%- comment -%} Header section {%- endcomment -%}
+  <div class="w-full px-5 py-8">
+    <div id="ProductCountTitle">
+      {%- comment -%} Search performed {%- endcomment -%}
+      {%- if search.performed -%}
+        {%- if search.results_count > 0 -%}
+          <h1 class="text-2xl leading-normal md:text-5xl">
+            {{ 'templates.search.results_with_count_and_term' | t: terms: search.terms, count: search.results_count }}
+          </h1>
+        {%- elsif search.filters != empty -%}
+          <h1 class="text-2xl leading-normal md:text-5xl">
+            {{ 'sections.collection_template.empty' | t }}
+            {{ 'sections.collection_template.use_fewer_filters_html' | t: link: search_url, class: 'underlined-link' }}
+          </h1>
+        {%- else -%}
+          <h1 id="no-results" class="text-2xl leading-normal md:text-5xl">
+            {{ 'templates.search.no_results' | t: terms: search.terms }}
+          </h1>
+        {%- endif -%}
+        {%- comment -%} If landed on search page {%- endcomment -%}
+      {%- else -%}
+        <h1 class="text-2xl leading-normal md:text-5xl">{{ 'general.search.search' | t }}</h1>
+      {%- endif -%}
+    </div>
+    <div class="w-full">
+      {%- comment -%}
+        {%- if settings.predictive_search_enabled -%}
+          <predictive-search data-loading-text="{{ 'accessibility.loading' | t }}">
+        {%- endif -%}
+      {%- endcomment -%}
+      <form action="{{ routes.search_url }}" method="get" role="search" class="search mt-6 md:mt-8">
+        <div class="field-- flex gap-1">
+          <input
+            class="h-12 grow border px-2 focus:outline-0"
+            id="Search-In-Template"
+            type="search"
+            name="q"
+            value="{{ search.terms | escape }}"
+            placeholder="{{ 'general.search.search' | t }}"
+            {%- if settings.predictive_search_enabled -%}
+              role="combobox"
+              aria-expanded="false"
+              aria-owns="predictive-search-results-list"
+              aria-controls="predictive-search-results-list"
+              aria-haspopup="listbox"
+              aria-autocomplete="list"
+              autocorrect="off"
+              autocomplete="off"
+              autocapitalize="off"
+              spellcheck="false"
+            {%- endif -%}
+          >
+          <input name="options[prefix]" type="hidden" value="last">
+
+          {%- if settings.predictive_search_enabled -%}
+            <div class="predictive-search predictive-search--search-template" tabindex="-1" data-predictive-search>
+              <div class="predictive-search__loading-state">
+                <svg
+                  aria-hidden="true"
+                  focusable="false"
+                  role="presentation"
+                  class="spinner"
+                  viewBox="0 0 66 66"
+                  xmlns="http://www.w3.org/2000/svg"
+                >
+                  <circle class="path" fill="none" stroke-width="6" cx="33" cy="33" r="30"></circle>
+                </svg>
+              </div>
+            </div>
+            <span class="predictive-search-status hidden" role="status" aria-hidden="true"></span>
+          {%- endif -%}
+
+          <button
+            type="submit"
+            class="button--outline !rounded-none !px-4 !py-3"
+            aria-label="{{ 'general.search.search' | t }}"
+          >
+            {% render 'icon-search' %}
+          </button>
+        </div>
+      </form>
+      {%- comment -%}
+        {%- if settings.predictive_search_enabled -%}
+          </predictive-search>
+        {%- endif -%}
+      {%- endcomment -%}
+    </div>
+  </div>
+
+  {%- comment -%} Results section {%- endcomment -%}
+  {%- if search.performed -%}
+    <div class="px-5">
+      {%- comment -%} Filtering and sorting {%- endcomment -%}
+      {%- if search.filters != empty -%}
+        {%- if section.settings.enable_filtering or section.settings.enable_sorting -%}
+          <aside
+            aria-labelledby="verticalTitle"
+            class="w-full"
+            id="main-search-filters"
+            data-id="{{ section.id }}"
+          >
+            {% render 'facets',
+              results: search,
+              enable_filtering: section.settings.enable_filtering,
+              enable_sorting: section.settings.enable_sorting,
+              filter_type: 'horizontal'
+            %}
+          </aside>
+        {%- endif -%}
+      {%- endif -%}
+      {%- comment -%} Results container {%- endcomment -%}
+      <div class="product-grid-container" id="ProductGridContainer">
+        {%- comment -%} No results {%- endcomment -%}
+        {%- if search.results.size == 0 and search.filters != empty -%}
+          <div
+            class="collection collection--empty"
+            id="product-grid"
+            data-id="{{ section.id }}"
+          ></div>
+        {%- else -%}
+          {%- comment -%} If Results {%- endcomment -%}
+          {% paginate search.results by 24 %}
+            <div class="collection" id="product-grid" data-id="{{ section.id }}">
+              <div class="loading-overlay"></div>
+              <div class="grid {{ columns_mobile }} {{ columns_desktop }} gap-2" role="list">
+                {%- for item in search.results -%}
+                  {% assign lazy_load = false %}
+                  {%- if forloop.index > 2 -%}
+                    {%- assign lazy_load = true -%}
+                  {%- endif -%}
+
+                  <div>
+                    {%- case item.object_type -%}
+                      {%- when 'product' -%}
+                        {%- capture product_settings -%}{%- if section.settings.product_show_vendor -%}vendor,{%- endif -%}title,price{%- endcapture -%}
+                        {% render 'card-product',
+                          card_product: item,
+                          image_ratio: section.settings.image_ratio,
+                          show_secondary_image: section.settings.show_secondary_image,
+                          show_vendor: section.settings.show_vendor,
+                          show_rating: section.settings.show_rating,
+                          lazyload: lazy_load
+                        %}
+                      {%- when 'article' -%}
+                        {%
+                          render 'article-card',
+                          article: item,
+                          show_image: true,
+                          show_date: section.settings.article_show_date,
+                          show_author: section.settings.article_show_author,
+                          show_badge: true,
+                          image_ratio: section.settings.image_ratio,
+                          lazyload: lazy_load,
+                        %}
+                      {%- when 'page' -%}
+                        <div class="card-wrapper underline-links-hover">
+                          <div
+                            class="card card--card card--text ratio color-{{ settings.card_color_scheme }}"
+                            style="--ratio-percent: 100%;"
+                          >
+                            <div class="card__content">
+                              <div class="card__information">
+                                <h4 class="card__heading">
+                                  <a href="{{ item.url }}" class="full-unstyled-link">
+                                    {{ item.title | truncate: 50 | escape }}
+                                  </a>
+                                </h4>
+                              </div>
+                              <div class="card__badge {{ settings.badge_position }}">
+                                <span class="badge color-background-1">{{ 'templates.search.page' | t }}</span>
+                              </div>
+                            </div>
+                          </div>
+                        </div>
+                    {%- endcase -%}
+                  </div>
+                {%- endfor -%}
+              </div>
+              {%- if paginate.pages > 1 -%}
+                {% render 'pagination', paginate: paginate %}
+              {%- endif -%}
+            </div>
+          {% endpaginate %}
+        {%- endif -%}
+      </div>
+    </div>
+  {%- endif -%}
+</div>
+
+{% schema %}
+{
+  "name": "Main search",
+  "tag": "section",
+  "class": "section search-section",
+  "settings": [
+    {
+      "type": "select",
+      "id": "image_ratio",
+      "options": [
+        {
+          "value": "portrait",
+          "label": "Portrait"
+        },
+        {
+          "value": "square",
+          "label": "Square"
+        }
+      ],
+      "default": "portrait",
+      "label": "Image ratio"
+    },
+    {
+      "type": "checkbox",
+      "id": "show_secondary_image",
+      "default": false,
+      "label": "Show second image"
+    },
+    {
+      "type": "checkbox",
+      "id": "show_vendor",
+      "default": false,
+      "label": "Show vendor"
+    },
+    {
+      "type": "checkbox",
+      "id": "show_rating",
+      "default": false,
+      "label": "Show rating"
+    },
+    {
+      "type": "checkbox",
+      "id": "enable_filtering",
+      "default": true,
+      "label": "Enable filtering"
+    },
+    {
+      "type": "checkbox",
+      "id": "enable_sorting",
+      "default": true,
+      "label": "Enable sorting"
+    },
+    {
+      "type": "checkbox",
+      "id": "article_show_date",
+      "default": false,
+      "label": "Show date"
+    },
+    {
+      "type": "checkbox",
+      "id": "article_show_author",
+      "default": false,
+      "label": "Show author"
+    },
+    {
+      "type": "select",
+      "id": "columns_desktop",
+      "default": "4",
+      "label": "Desktop columns",
+      "options": [
+        {
+          "value": "1",
+          "label": "1 column"
+        },
+        {
+          "value": "2",
+          "label": "2 columns"
+        },
+        {
+          "value": "3",
+          "label": "3 columns"
+        },
+        {
+          "value": "4",
+          "label": "4 columns"
+        },
+        {
+          "value": "5",
+          "label": "5 columns"
+        }
+      ]
+    },
+    {
+      "type": "select",
+      "id": "columns_mobile",
+      "default": "2",
+      "label": "Mobile columns",
+      "options": [
+        {
+          "value": "1",
+          "label": "1 column"
+        },
+        {
+          "value": "2",
+          "label": "2 columns"
+        }
+      ]
+    },
+    {
+      "type": "header",
+      "content": "Section padding"
+    },
+    {
+      "type": "range",
+      "id": "padding_top",
+      "min": 0,
+      "max": 128,
+      "step": 8,
+      "unit": "px",
+      "label": "t:sections.all.padding.padding_top",
+      "default": 32
+    },
+    {
+      "type": "range",
+      "id": "padding_bottom",
+      "min": 0,
+      "max": 128,
+      "step": 8,
+      "unit": "px",
+      "label": "t:sections.all.padding.padding_bottom",
+      "default": 32
+    }
+  ]
+}
+{% endschema %}

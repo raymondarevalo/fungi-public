@@ -1,0 +1,191 @@
+{%- style -%}
+  #section-{{ section.id }}-padding {
+    padding-top: {{ section.settings.padding_top | times: 0.75 | round: 0 }}px;
+    padding-bottom: {{ section.settings.padding_bottom | times: 0.75 | round: 0 }}px;
+  }
+
+  @media screen and (min-width: 750px) {
+    #section-{{ section.id }}-padding {
+      padding-top: {{ section.settings.padding_top }}px;
+      padding-bottom: {{ section.settings.padding_bottom }}px;
+    }
+  }
+{%- endstyle -%}
+
+{%- liquid
+  case section.settings.sort
+    when 'products_high', 'products_low'
+      assign collections = collections | sort: 'all_products_count'
+    when 'date', 'date_reversed'
+      assign collections = collections | sort: 'published_at'
+  endcase
+
+  if section.settings.sort == 'products_high' or section.settings.sort == 'date_reversed' or section.settings.sort == 'alphabetical_reversed'
+    assign collections = collections | reverse
+  endif
+-%}
+
+{%- capture columns_desktop -%}
+md:grid-cols-{{ section.settings.columns_desktop }}
+{%- endcapture -%}
+
+<section id="section-{{ section.id }}-padding" class="w-full">
+  <div class="flex flex-col gap-6 px-5 md:gap-10">
+    <h1 class="text-3xl md:text-5xl">{{ section.settings.title | escape }}</h1>
+    {%- if section.settings.show_description -%}
+      <div class="p">{{ section.settings.description }}</div>
+    {%- endif -%}
+    <div class="grid grid-cols-1 gap-x-4 gap-y-6 md:gap-x-8 md:gap-y-14 {{ columns_desktop }}" role="list">
+      {%- for collection in collections -%}
+        <div class="collection-list__item grid__item">
+          {% render 'card-collection',
+            card_collection: collection,
+            image_ratio: section.settings.image_ratio,
+            button_label: 'Shop Now'
+          %}
+        </div>
+      {%- endfor -%}
+    </div>
+  </div>
+</section>
+
+{% schema %}
+{
+  "name": "List collections",
+  "settings": [
+    {
+      "type": "text",
+      "id": "title",
+      "label": "Header",
+      "default": "Collections"
+    },
+    {
+      "type": "richtext",
+      "id": "description",
+      "label": "Description"
+    },
+    {
+      "type": "select",
+      "id": "sort",
+      "options": [
+        {
+          "value": "alphabetical",
+          "label": "Alphabetical"
+        },
+        {
+          "value": "alphabetical_reversed",
+          "label": "Alphabetical reversed"
+        },
+        {
+          "value": "date_reversed",
+          "label": "Date reversed"
+        },
+        {
+          "value": "date",
+          "label": "Date"
+        },
+        {
+          "value": "products_high",
+          "label": "Products high"
+        },
+        {
+          "value": "products_low",
+          "label": "Products low"
+        }
+      ],
+      "default": "alphabetical",
+      "label": "Sort"
+    },
+    {
+      "type": "select",
+      "id": "image_ratio",
+      "options": [
+        {
+          "value": "portrait",
+          "label": "Portrait"
+        },
+        {
+          "value": "square",
+          "label": "Square"
+        },
+        {
+          "value": "landscape",
+          "label": "Landscape"
+        }
+      ],
+      "default": "portrait",
+      "label": "Image ratio"
+    },
+    {
+      "type": "checkbox",
+      "id": "show_description",
+      "default": false,
+      "label": "Shop description"
+    },
+    {
+      "type": "select",
+      "id": "columns_desktop",
+      "options": [
+        {
+          "value": "1",
+          "label": "1 column"
+        },
+        {
+          "value": "2",
+          "label": "2 columns"
+        },
+        {
+          "value": "3",
+          "label": "3 columns"
+        },
+        {
+          "value": "4",
+          "label": "4 columns"
+        }
+      ],
+      "default": "3",
+      "label": "Desktop columns"
+    },
+    {
+      "type": "select",
+      "id": "columns_mobile",
+      "options": [
+        {
+          "value": "1",
+          "label": "1 column"
+        },
+        {
+          "value": "2",
+          "label": "2 columns"
+        }
+      ],
+      "default": "2",
+      "label": "Mobile columns"
+    },
+    {
+      "type": "header",
+      "content": "Section padding"
+    },
+    {
+      "type": "range",
+      "id": "padding_top",
+      "min": 0,
+      "max": 128,
+      "step": 8,
+      "unit": "px",
+      "label": "Padding top",
+      "default": 64
+    },
+    {
+      "type": "range",
+      "id": "padding_bottom",
+      "min": 0,
+      "max": 128,
+      "step": 4,
+      "unit": "px",
+      "label": "Padding bottom",
+      "default": 64
+    }
+  ]
+}
+{% endschema %}

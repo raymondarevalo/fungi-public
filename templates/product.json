@@ -1,0 +1,64 @@
+{
+  "sections": {
+    "main-product": {
+      "type": "main-product",
+      "blocks": {
+        "title": {
+          "type": "title",
+          "settings": {}
+        },
+        "price": {
+          "type": "price",
+          "settings": {}
+        },
+        "description": {
+          "type": "description",
+          "settings": {}
+        },
+        "variant_picker": {
+          "type": "variant_picker",
+          "settings": {
+            "picker_type": "button"
+          }
+        },
+        "quantity_selector": {
+          "type": "quantity_selector",
+          "settings": {}
+        },
+        "buy_buttons": {
+          "type": "buy_buttons",
+          "settings": {
+            "show_dynamic_checkout": true
+          }
+        }
+      },
+      "block_order": ["title", "price", "description", "variant_picker", "quantity_selector", "buy_buttons"],
+      "settings": {
+        "padding_top": 0,
+        "padding_bottom": 128
+      }
+    },
+    "main-product-recommendations": {
+      "type": "product-recommendations",
+      "settings": {
+        "title": "You may also like",
+        "products_to_show": 4,
+        "enable_carousel": false,
+        "columns_desktop": "4",
+        "columns_mobile": "2",
+        "image_ratio": "portrait",
+        "padding_top": 0,
+        "padding_bottom": 96
+      }
+    },
+    "main-product-marquee": {
+      "type": "marquee",
+      "settings": {
+        "title": "Delights for enlightenment.",
+        "padding_top": 0,
+        "padding_bottom": 0
+      }
+    }
+  },
+  "order": ["main-product", "main-product-recommendations", "main-product-marquee"]
+}

@@ -1,0 +1,309 @@
+{%- style -%}
+  #section-{{ section.id }}-padding {
+    padding-top: {{ section.settings.padding_top | times: 0.75 | round: 0 }}px;
+    padding-bottom: {{ section.settings.padding_bottom | times: 0.75 | round: 0 }}px;
+  }
+
+  @media screen and (min-width: 750px) {
+    #section-{{ section.id }}-padding {
+      padding-top: {{ section.settings.padding_top }}px;
+      padding-bottom: {{ section.settings.padding_bottom }}px;
+    }
+  }
+{%- endstyle -%}
+
+<footer id="section-{{ section.id }}-padding" class="color-{{ section.settings.color_scheme }} w-full px-5">
+  <div class="mx-auto  flex w-full flex-col gap-14">
+    <div class="flex flex-col gap-12">
+      {%- comment -%} Newsletter section {%- endcomment -%}
+      <div class="flex flex-col justify-between gap-8 md:flex-row">
+        {%- comment -%}Newsletter heading{%- endcomment -%}
+        {%- if section.settings.newsletter_heading != blank -%}
+          <p class="text-sm md:w-5/12">{{ section.settings.newsletter_heading | escape }}</p>
+        {%- endif -%}
+        {%- comment -%}Newsletter form{%- endcomment -%}
+        {%- form 'customer', class: 'md:w-5/12' -%}
+          <input type="hidden" name="contact[tags]" value="newsletter">
+          <div class="">
+            <div class="">
+              <div class="flex w-full flex-col flex-wrap items-stretch gap-x-2 gap-y-3 md:flex-row md:items-start">
+                <input
+                  id="NewsletterForm--{{ section.id }}"
+                  type="email"
+                  name="contact[email]"
+                  class="h-12 w-auto grow px-4 text-sm focus:outline-0"
+                  value="{{ form.email }}"
+                  aria-required="true"
+                  autocorrect="off"
+                  autocapitalize="off"
+                  autocomplete="email"
+                  {% if form.errors %}
+                    autofocus
+                    aria-invalid="true"
+                    aria-describedby="ContactFooter-error"
+                  {% elsif form.posted_successfully? %}
+                    aria-describedby="ContactFooter-success"
+                  {% endif %}
+                  placeholder="Email Address"
+                  required
+                >
+                <button
+                  type="submit"
+                  class="newsletter-form__button field__button strink grow-0 !rounded-none !bg-white !px-4 !text-sm !leading-none !text-black"
+                  name="commit"
+                  id="Subscribe"
+                  aria-label="send"
+                >
+                  Submit
+                </button>
+              </div>
+            </div>
+            {%- if form.errors -%}
+              <small class="form__message" id="ContactFooter-error">
+                {%- render 'icon-error' -%}
+                {{- form.errors.translated_fields.email | capitalize }}
+                {{ form.errors.messages.email -}}
+              </small>
+            {%- endif -%}
+          </div>
+          {%- if form.posted_successfully? -%}
+            <div class="form__message flex items-center gap-2" id="ContactFooter-success" tabindex="-1" autofocus>
+              {% render 'icon-success' -%}
+              <span>success</span>
+            </div>
+          {%- endif -%}
+        {%- endform -%}
+      </div>
+
+      {%- comment -%} Footer links {%- endcomment -%}
+      <div class="grid grid-cols-2 gap-6 md:grid-cols-4">
+        {% for block in section.blocks %}
+          {% case block.type %}
+            {% when 'menu' %}
+              {%- if block.settings.menu != blank -%}
+                <div class="">
+                  <ul>
+                    {%- for link in block.settings.menu.links -%}
+                      <li>
+                        <a href="{{ link.url }}" class="text-sm leading-normal">
+                          {{ link.title }}
+                        </a>
+                      </li>
+                    {%- endfor -%}
+                  </ul>
+                </div>
+              {%- endif -%}
+            {% when 'text' %}
+              <div class="flex flex-col gap-2">
+                <span class="text-sm leading-normal">{{ block.settings.heading }}</span>
+                <span class="text-sm leading-normal">{{ block.settings.text | replace: 'p>', 'span>' }}</span>
+              </div>
+          {% endcase %}
+        {% endfor %}
+
+        <ul class="flex flex-col">
+          {%- if settings.social_twitter_link != blank -%}
+            <li>
+              <a
+                href="{{ settings.social_twitter_link }}"
+                class="text-sm leading-normal"
+              >
+                Twitter
+              </a>
+            </li>
+          {%- endif -%}
+          {%- if settings.social_facebook_link != blank -%}
+            <li class="">
+              <a
+                href="{{ settings.social_facebook_link }}"
+                class="text-sm leading-normal"
+              >
+                Facebook
+              </a>
+            </li>
+          {%- endif -%}
+          {%- if settings.social_pinterest_link != blank -%}
+            <li class="">
+              <a
+                href="{{ settings.social_pinterest_link }}"
+                class="text-sm leading-normal"
+              >
+                Pinterest
+              </a>
+            </li>
+          {%- endif -%}
+          {%- if settings.social_instagram_link != blank -%}
+            <li class="">
+              <a
+                href="{{ settings.social_instagram_link }}"
+                class="text-sm leading-normal"
+              >
+                Instagram
+              </a>
+            </li>
+          {%- endif -%}
+          {%- if settings.social_tiktok_link != blank -%}
+            <li class="">
+              <a
+                href="{{ settings.social_tiktok_link }}"
+                class="text-sm leading-normal"
+              >
+                Tiktok
+              </a>
+            </li>
+          {%- endif -%}
+
+          {%- if settings.social_youtube_link != blank -%}
+            <li class="">
+              <a
+                href="{{ settings.social_youtube_link }}"
+                class="text-sm leading-normal"
+              >
+                Youtube
+              </a>
+            </li>
+          {%- endif -%}
+          {%- if settings.social_vimeo_link != blank -%}
+            <li class="">
+              <a
+                href="{{ settings.social_vimeo_link }}"
+                class="text-sm leading-normal"
+              >
+                Vimeo
+              </a>
+            </li>
+          {%- endif -%}
+        </ul>
+      </div>
+    </div>
+    <div class="flex flex-col gap-8">
+      <div class="w-full">
+        <span class="hidden">{{ 'sections.footer.payment' | t }}</span>
+        <ul class="flex w-full flex-row flex-wrap gap-1 md:justify-end" role="list">
+          {%- for type in shop.enabled_payment_types -%}
+            <li class="">
+              {{ type | payment_type_svg_tag: class: 'icon icon--full-color' }}
+            </li>
+          {%- endfor -%}
+        </ul>
+      </div>
+      <div class="flex w-full flex-col-reverse flex-wrap justify-between gap-4 md:flex-row">
+        <span class="copyright__content text-sm"
+          >&copy; {{ 'now' | date: '%Y' }},
+          {{ shop.name | link_to: routes.root_url -}}
+        </span>
+      </div>
+    </div>
+  </div>
+</footer>
+
+{% schema %}
+{
+  "name": "Footer",
+  "class": "section-footer w-full",
+  "blocks": [
+    {
+      "type": "menu",
+      "name": "Menu",
+      "settings": [
+        {
+          "type": "text",
+          "id": "heading",
+          "default": "Quick links",
+          "label": "Quick links"
+        },
+        {
+          "type": "link_list",
+          "id": "menu",
+          "default": "footer",
+          "label": "Menu",
+          "info": "Displays only top-level menu items."
+        }
+      ]
+    },
+    {
+      "name": "Text",
+      "type": "text",
+      "settings": [
+        {
+          "type": "text",
+          "id": "heading",
+          "default": "About us",
+          "label": "Heading"
+        },
+        {
+          "type": "richtext",
+          "id": "text",
+          "default": "<p>Lorem ipsum dolor sit amet, consectetur adipiscing elit. Sed euismod, nisl vel lacinia aliquam, nisl nisl aliquet nisl, et aliquet lorem nisl eget dolor. Sed euismod, nisl vel lacinia aliquam, nisl nisl aliquet nisl, et aliquet lorem nisl eget dolor.</p>",
+          "label": "subtext"
+        }
+      ]
+    }
+  ],
+  "settings": [
+    {
+      "type": "text",
+      "id": "newsletter_heading",
+      "default": "Unleash the true power of nature's most potent fungi by joining the Fungi Theme family! Subscribe to our exclusive newsletter and unlock a world of incredible benefits!",
+      "label": "Newsletter heading"
+    },
+    {
+      "type": "select",
+      "id": "color_scheme",
+      "options": [
+        {
+          "value": "background-1",
+          "label": "Background 1"
+        },
+        {
+          "value": "inverse",
+          "label": "Inverse"
+        },
+        {
+          "value": "contrast",
+          "label": "Contrast"
+        }
+      ],
+      "default": "contrast",
+      "label": "Color Scheme"
+    },
+    {
+      "type": "header",
+      "content": "section padding"
+    },
+    {
+      "type": "range",
+      "id": "padding_top",
+      "min": 0,
+      "max": 128,
+      "step": 8,
+      "unit": "px",
+      "label": "Top padding",
+      "default": 64
+    },
+    {
+      "type": "range",
+      "id": "padding_bottom",
+      "min": 0,
+      "max": 128,
+      "step": 8,
+      "unit": "px",
+      "label": "Bottom padding",
+      "default": 64
+    }
+  ],
+  "default": {
+    "blocks": [
+      {
+        "type": "menu"
+      },
+      {
+        "type": "menu"
+      },
+      {
+        "type": "text"
+      }
+    ]
+  }
+}
+{% endschema %}

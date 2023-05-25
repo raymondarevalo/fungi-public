@@ -1,0 +1,233 @@
+{%- style -%}
+  #section-{{ section.id }}-padding {
+    padding-top: {{ section.settings.padding_top | times: 0.75 | round: 0 }}px;
+    padding-bottom: {{ section.settings.padding_bottom | times: 0.75 | round: 0 }}px;
+  }
+
+  @media screen and (min-width: 750px) {
+    #section-{{ section.id }}-padding {
+      padding-top: {{ section.settings.padding_top }}px;
+      padding-bottom: {{ section.settings.padding_bottom }}px;
+    }
+  }
+{%- endstyle -%}
+
+{%- liquid
+  assign if_pagination = false
+  if collection.products.size > section.settings.products_per_page
+    assign if_pagination = true
+  endif
+
+  assign columns_desktop = 4
+-%}
+
+<section id="section-{{ section.id }}-padding" class="w-full px-5">
+  <div class="mx-auto flex w-full flex-wrap items-start">
+    {% if section.settings.filter_type == 'vertical' %}
+      <facet-filters-form class="facets small-hide no-js-hidden mb-6 w-full">
+        <form class="flex items-center justify-end gap-10" id="FacetSortForm">
+          <div class="sorting">
+            <div class="flex items-center justify-between gap-2">
+              <h2 class="text-base">
+                <label for="SortBy">{{ 'products.facets.sort_by_label' | t }}</label>
+              </h2>
+              <div class="select relative">
+                {%- assign sort_by = collection.sort_by | default: collection.default_sort_by -%}
+                <select
+                  name="sort_by"
+                  class="bg-transparent"
+                  id="SortBy"
+                  aria-describedby="a11y-refresh-page-message"
+                >
+                  {%- for option in collection.sort_options -%}
+                    <option
+                      value="{{ option.value | escape }}"
+                      {% if option.value == sort_by %}
+                        selected="selected"
+                      {% endif %}
+                    >
+                      {{ option.name | escape }}
+                    </option>
+                  {%- endfor -%}
+                </select>
+                {% render 'icon-chevron'; extra_classes: "absolute right-0 top-[2px] pointer-events-none" %}
+              </div>
+            </div>
+          </div>
+
+          <div class="" role="status">
+            <h2 class="">
+              <span id="ProductCountDesktop">
+                {%- if collection.results_count -%}
+                  {{
+                    'templates.search.results_with_count'
+                    | t: terms: collection.terms, count: collection.results_count
+                  }}
+                {%- elsif collection.products_count == collection.all_products_count -%}
+                  {{ 'products.facets.product_count_simple' | t: count: collection.products_count }}
+                {%- else -%}
+                  {{
+                    'products.facets.product_count'
+                    | t: product_count: collection.products_count, count: collection.all_products_count
+                  }}
+                {%- endif -%}
+              </span>
+            </h2>
+            <div class="loading-overlay__spinner hidden">
+              <svg
+                aria-hidden="true"
+                focusable="false"
+                role="presentation"
+                class="spinner"
+                viewBox="0 0 66 66"
+                xmlns="http://www.w3.org/2000/svg"
+              >
+                <circle class="path" fill="none" stroke-width="6" cx="33" cy="33" r="30"></circle>
+              </svg>
+            </div>
+          </div>
+        </form>
+      </facet-filters-form>
+    {% endif %}
+    <div class="{% if section.settings.filter_type == "vertical" %}w-full md:w-1/4{% else %}w-full{% endif %}">
+      <aside
+        aria-labelledby="verticalTitle"
+        class="facets-wrapper"
+        id="main-collection-filters"
+        data-id="{{ section.id }}"
+      >
+        {% render 'facets',
+          results: collection,
+          enable_filtering: true,
+          enable_sorting: true,
+          filter_type: section.settings.filter_type
+        %}
+      </aside>
+    </div>
+    <div
+      id="ProductGridContainer"
+      class="{% if section.settings.filter_type == "vertical" %}w-full md:w-3/4{% else %}w-full{% endif %}"
+    >
+      {%- paginate collection.products by section.settings.products_per_page -%}
+        {%- if collection.products.size == 0 -%}
+          <div class="col-span-full">
+            <p>
+              {{ 'sections.collection_template.empty' | t -}}
+              <br>
+              {{
+                'sections.collection_template.use_fewer_filters_html'
+                | t: link: collection.url, class: 'underlined-link link'
+              }}
+            </p>
+          </div>
+        {%- else -%}
+          <div class="collection">
+            <div
+              id="product-grid"
+              data-id="{{ section.id }}"
+              class="grid w-full grid-cols-2 gap-x-2 gap-y-6 md:gap-y-10 {% if section.settings.filter_type == "vertical" %}lg:grid-cols-3{% else %}md:grid-cols-3 lg:grid-cols-4{% endif %}"
+            >
+              {%- for product in collection.products -%}
+                {% assign lazy_load = false %}
+                {%- if forloop.index > 2 -%}
+                  {%- assign lazy_load = true -%}
+                {%- endif -%}
+                <div>
+                  {% render 'card-product',
+                    card_product: product,
+                    section_id: section.id,
+                    lazy_load: lazy_load,
+                    image_ratio: section.settings.image_ratio
+                  %}
+                </div>
+              {%- endfor -%}
+            </div>
+          </div>
+        {%- endif -%}
+      {%- endpaginate -%}
+    </div>
+  </div>
+</section>
+
+{% schema %}
+{
+  "name": "Collection product grid",
+  "settings": [
+    {
+      "type": "range",
+      "id": "products_per_page",
+      "min": 8,
+      "max": 32,
+      "step": 4,
+      "default": 16,
+      "label": "Products per page"
+    },
+    {
+      "type": "select",
+      "id": "filter_type",
+      "options": [
+        {
+          "value": "horizontal",
+          "label": "Horizontal"
+        },
+        {
+          "value": "vertical",
+          "label": "vertical"
+        }
+      ],
+      "default": "horizontal",
+      "label": "Filter type",
+      "info": "For desktop view"
+    },
+    {
+      "type": "select",
+      "id": "image_ratio",
+      "options": [
+        {
+          "value": "landscape",
+          "label": "Landscape"
+        },
+        {
+          "value": "portrait",
+          "label": "Portrait"
+        },
+        {
+          "value": "Square",
+          "label": "Square"
+        }
+      ],
+      "default": "portrait",
+      "label": "Image ratio"
+    },
+    {
+      "type": "header",
+      "content": "section padding"
+    },
+    {
+      "type": "range",
+      "id": "padding_top",
+      "min": 0,
+      "max": 128,
+      "step": 8,
+      "unit": "px",
+      "label": "Top padding",
+      "default": 0
+    },
+    {
+      "type": "range",
+      "id": "padding_bottom",
+      "min": 0,
+      "max": 128,
+      "step": 8,
+      "unit": "px",
+      "label": "Bottom padding",
+      "default": 128
+    }
+  ],
+  "presets": [
+    {
+      "name": "Collection product grid"
+    }
+  ]
+}
+{% endschema %}

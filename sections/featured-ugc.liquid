@@ -1,0 +1,132 @@
+{%- style -%}
+  #section-{{ section.id }}-padding {
+    padding-top: {{ section.settings.padding_top | times: 0.75 | round: 0 }}px;
+    padding-bottom: {{ section.settings.padding_bottom | times: 0.75 | round: 0 }}px;
+  }
+
+  @media screen and (min-width: 750px) {
+    #section-{{ section.id }}-padding {
+      padding-top: {{ section.settings.padding_top }}px;
+      padding-bottom: {{ section.settings.padding_bottom }}px;
+    }
+  }
+{%- endstyle -%}
+
+<section id="section-{{ section.id }}-padding" class="w-full">
+  <div class="mx-auto grid w-full grid-cols-4 gap-px border border-black/10 bg-black/10 md:grid-cols-8">
+    {% for block in section.blocks %}
+      {% case block.type %}
+        {% when 'ugc-item' %}
+          <div class="group relative">
+            {%- if block.settings.image -%}
+              <div class="group relative overflow-hidden pb-[100%]">
+                <img
+                  srcset="
+                    {%- if block.settings.image.width >= 165 -%}{{ block.settings.image | image_url: width: 165 }} 165w,{%- endif -%}
+                    {%- if block.settings.image.width >= 360 -%}{{ block.settings.image | image_url: width: 360 }} 360w,{%- endif -%}
+                    {%- if block.settings.image.width >= 533 -%}{{ block.settings.image | image_url: width: 533 }} 533w,{%- endif -%}
+                    {%- if block.settings.image.width >= 720 -%}{{ block.settings.image | image_url: width: 720 }} 720w,{%- endif -%}
+                    {%- if block.settings.image.width >= 940 -%}{{ block.settings.image | image_url: width: 940 }} 940w,{%- endif -%}
+                    {%- if block.settings.image.width >= 1066 -%}{{ block.settings.image | image_url: width: 1066 }} 1066w,{%- endif -%}
+                    {{ block.settings.image | image_url }} {{ block.settings.image.width }}w
+                  "
+                  src="{{ block.settings.image | image_url: width: 360 }}"
+                  sizes="(min-width: 1600px) 267px, (min-width: 990px) 170px, (min-width: 750px) 130px, 220px"
+                  alt="{{ block.settings.image.alt | escape }}"
+                  class="absolute h-full w-full max-w-full object-cover object-center"
+                  loading="lazy"
+                  width="{{ block.settings.image.width }}"
+                  height="{{ block.settings.image.height }}"
+                >
+              </div>
+            {%- else -%}
+              <div
+                class="relative overflow-hidden bg-neutral-200 pb-[100%]"
+              ></div>
+            {%- endif -%}
+            <div class="absolute inset-0 flex items-center justify-center bg-black/20 opacity-0 hover:opacity-100">
+              <a href="{{ block.settings.link }}" class="button button--small color-contrast">click button</a>
+            </div>
+          </div>
+      {% endcase %}
+    {% endfor %}
+  </div>
+</section>
+
+{% schema %}
+{
+  "name": "Featured UGC",
+  "blocks": [
+    {
+      "type": "ugc-item",
+      "name": "UGC Item",
+      "limit": 8,
+      "settings": [
+        {
+          "type": "image_picker",
+          "id": "image",
+          "label": "Image",
+          "info": "We suggest an image ratio of 1:1 for best results."
+        },
+        {
+          "type": "url",
+          "id": "link",
+          "label": "Link",
+          "info": "The link to the page you want to send the user to when they click the item."
+        }
+      ]
+    }
+  ],
+  "settings": [
+    {
+      "type": "header",
+      "content": "section padding"
+    },
+    {
+      "type": "range",
+      "id": "padding_top",
+      "min": 0,
+      "max": 128,
+      "step": 8,
+      "unit": "px",
+      "label": "Top padding",
+      "default": 0
+    },
+    {
+      "type": "range",
+      "id": "padding_bottom",
+      "min": 0,
+      "max": 128,
+      "step": 8,
+      "unit": "px",
+      "label": "Bottom padding",
+      "default": 0
+    }
+  ],
+  "presets": [
+    {
+      "name": "Featured UGC",
+      "blocks": [
+        {
+          "type": "ugc-item"
+        },
+        {
+          "type": "ugc-item"
+        },
+        {
+          "type": "ugc-item"
+        },
+        {
+          "type": "ugc-item"
+        },
+        {
+          "type": "ugc-item"
+        },
+        {
+          "type": "ugc-item"
+        }
+      ]
+    }
+  ]
+}
+{% endschema %}
