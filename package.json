@@ -1,0 +1,23 @@
+{
+  "name": "template-basics",
+  "version": "0.0.0",
+  "private": true,
+  "scripts": {
+    "dev": "adastra dev",
+    "build": "adastra build",
+    "preview": "adastra preview",
+    "check": "adastra check"
+  },
+  "devDependencies": {
+    "@shopify/cli": "latest",
+    "@shopify/theme": "latest",
+    "adastra-cli": "latest",
+    "adastra-plugin": "latest",
+    "autoprefixer": "^10.4.13",
+    "postcss": "^8.4.21",
+    "prettier": "^2.8.7",
+    "prettier-plugin-tailwindcss": "^0.2.8",
+    "tailwindcss": "^3.2.7",
+    "vite": "^4.1.4"
+  }
+}
